@@ -71,12 +71,30 @@
     #result[data-state="success"] { color: #176448; }
     #result[data-state="error"] { color: #a12c2c; }
     .coordinates { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .consent {
+      display: none;
+      margin-top: 18px;
+      padding: 14px 16px;
+      border: 1px solid #d5deea;
+      border-radius: 10px;
+      background: #f7f9fc;
+      color: #3f4b60;
+      font-size: .9rem;
+      line-height: 1.45;
+    }
+    .consent.visible { display: block; }
+    .consent label { display: flex; gap: 10px; align-items: flex-start; }
+    .consent input { margin-top: 3px; }
+    #submitLocation { display: none; background: #284d8f; }
+    #submitLocation.visible { display: block; }
+    #submitLocation:hover { background: #1d3d74; }
     footer { margin-top: 22px; color: #6f7b8f; font-size: .78rem; text-align: center; }
     @media (prefers-color-scheme: dark) {
       :root { color: #edf2f8; background: #111827; }
       main { border-color: #334155; background: #1e293b; box-shadow: none; }
       .intro, footer { color: #b7c2d1; }
       .privacy { border-color: #326e5b; background: #173b31; color: #ccecdf; }
+      .consent { border-color: #46556b; background: #263449; color: #d5deea; }
       #result { border-color: #3a475a; }
       #result[data-state="success"] { color: #86dbbb; }
       #result[data-state="error"] { color: #ffaaaa; }
@@ -90,11 +108,19 @@
     <p class="intro">Use this page to test how your browser asks for location permission.</p>
 
     <div class="privacy">
-      Your location is requested only after you press the button. It is displayed on this device and is not sent to or stored by a server.
+      Pressing the first button only displays your location on this device. It is not sent anywhere unless you separately consent and press “Send coordinates.”
     </div>
 
     <button id="requestLocation" type="button">Share my location for this test</button>
     <div id="result" role="status" aria-live="polite">No location has been requested.</div>
+
+    <div class="consent" id="consentPanel">
+      <label>
+        <input id="consent" type="checkbox">
+        <span>I consent to send my coordinates, accuracy, and submission time to the operator of this demonstration. The entry will be stored in Render service logs and may remain there according to Render’s log-retention policy.</span>
+      </label>
+    </div>
+    <button id="submitLocation" type="button" disabled>Send coordinates to operator</button>
 
     <footer>Educational demo · Revoke access at any time in your browser settings</footer>
   </main>
@@ -102,6 +128,10 @@
   <script>
     const button = document.querySelector('#requestLocation');
     const result = document.querySelector('#result');
+    const consentPanel = document.querySelector('#consentPanel');
+    const consent = document.querySelector('#consent');
+    const submitButton = document.querySelector('#submitLocation');
+    let capturedLocation = null;
 
     function finish(message, state) {
       result.innerHTML = message;
@@ -123,6 +153,12 @@
 
       navigator.geolocation.getCurrentPosition(
         ({ coords, timestamp }) => {
+          capturedLocation = {
+            latitude: Number(coords.latitude.toFixed(5)),
+            longitude: Number(coords.longitude.toFixed(5)),
+            accuracy: Math.round(coords.accuracy),
+            capturedAt: new Date(timestamp).toISOString()
+          };
           const latitude = coords.latitude.toFixed(5);
           const longitude = coords.longitude.toFixed(5);
           const accuracy = Math.round(coords.accuracy);
@@ -131,6 +167,8 @@
             `Approximate accuracy: ±${accuracy} m<br>Read at ${new Date(timestamp).toLocaleString()}.`,
             'success'
           );
+          consentPanel.classList.add('visible');
+          submitButton.classList.add('visible');
         },
         (error) => {
           const messages = {
@@ -142,6 +180,34 @@
         },
         { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }
       );
+    });
+
+    consent.addEventListener('change', () => {
+      submitButton.disabled = !consent.checked || !capturedLocation;
+    });
+
+    submitButton.addEventListener('click', async () => {
+      if (!consent.checked || !capturedLocation) return;
+      submitButton.disabled = true;
+      submitButton.textContent = 'Sending…';
+
+      try {
+        const response = await fetch('/api/location', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...capturedLocation, consent: true })
+        });
+        if (!response.ok) throw new Error('Submission failed');
+        result.textContent = 'Coordinates were sent to the operator with your consent.';
+        result.dataset.state = 'success';
+        submitButton.textContent = 'Coordinates sent';
+        consent.disabled = true;
+      } catch {
+        result.textContent = 'The coordinates could not be sent. Please try again.';
+        result.dataset.state = 'error';
+        submitButton.disabled = false;
+        submitButton.textContent = 'Send coordinates to operator';
+      }
     });
   </script>
 </body>

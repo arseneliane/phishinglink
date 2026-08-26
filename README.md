@@ -1,12 +1,12 @@
 # Geolocation Permission Demo
 
-A transparent browser geolocation self-test. Coordinates are displayed locally and are never submitted to a backend.
+A transparent browser geolocation self-test. Coordinates are displayed locally first and are submitted to the service only after a separate, explicit consent checkbox and button press.
 
 ## Run locally with Docker
 
 ```sh
 docker build -t geolocation-demo .
-docker run --rm -p 8080:80 geolocation-demo
+docker run --rm -p 8080:10000 geolocation-demo
 ```
 
 Open <http://localhost:8080>. Geolocation requires a secure context; browsers treat localhost as secure, and a hosted deployment should use HTTPS.
@@ -19,4 +19,10 @@ Create a new Web Service from this repository and select the Docker runtime. The
 
 - The browser prompt appears only after the visitor presses the location button.
 - No login or password fields are presented.
-- Coordinates are not transmitted, logged, or saved in browser storage.
+- Reading coordinates does not transmit them.
+- A separate checkbox explains collection and a separate button submits them.
+- Consented entries are written to Render service logs as `CONSENTED_LOCATION_SUBMISSION` JSON records.
+
+## Retrieve consented submissions
+
+Open the service in the Render dashboard, choose **Logs**, and search for `CONSENTED_LOCATION_SUBMISSION`. Render controls log retention; this demo does not maintain a separate database.
