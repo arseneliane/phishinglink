@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Geolocation Permission Demo</title>
+  <style>
+    :root {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #172033;
+      background: #eef3f9;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px;
+      display: grid;
+      place-items: center;
+    }
+    main {
+      width: min(100%, 480px);
+      padding: 34px;
+      border: 1px solid #d9e2ee;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 18px 50px rgb(25 44 74 / 12%);
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: #176448;
+      font-size: .78rem;
+      font-weight: 750;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    h1 { margin: 0; font-size: clamp(1.8rem, 6vw, 2.35rem); line-height: 1.08; }
+    .intro { margin: 14px 0 22px; color: #556176; line-height: 1.55; }
+    .privacy {
+      padding: 14px 16px;
+      border: 1px solid #b9dfd1;
+      border-radius: 10px;
+      background: #effaf6;
+      color: #245846;
+      font-size: .92rem;
+      line-height: 1.45;
+    }
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 13px 18px;
+      border: 0;
+      border-radius: 10px;
+      background: #176448;
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button:hover { background: #0f5039; }
+    button:focus-visible { outline: 3px solid #70cbaa; outline-offset: 3px; }
+    button:disabled { cursor: wait; opacity: .7; }
+    #result {
+      min-height: 24px;
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid #e1e7ef;
+      line-height: 1.5;
+    }
+    #result[data-state="success"] { color: #176448; }
+    #result[data-state="error"] { color: #a12c2c; }
+    .coordinates { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    footer { margin-top: 22px; color: #6f7b8f; font-size: .78rem; text-align: center; }
+    @media (prefers-color-scheme: dark) {
+      :root { color: #edf2f8; background: #111827; }
+      main { border-color: #334155; background: #1e293b; box-shadow: none; }
+      .intro, footer { color: #b7c2d1; }
+      .privacy { border-color: #326e5b; background: #173b31; color: #ccecdf; }
+      #result { border-color: #3a475a; }
+      #result[data-state="success"] { color: #86dbbb; }
+      #result[data-state="error"] { color: #ffaaaa; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Permission self-test</p>
+    <h1>Geolocation demo</h1>
+    <p class="intro">Use this page to test how your browser asks for location permission.</p>
+
+    <div class="privacy">
+      Your location is requested only after you press the button. It is displayed on this device and is not sent to or stored by a server.
+    </div>
+
+    <button id="requestLocation" type="button">Share my location for this test</button>
+    <div id="result" role="status" aria-live="polite">No location has been requested.</div>
+
+    <footer>Educational demo · Revoke access at any time in your browser settings</footer>
+  </main>
+
+  <script>
+    const button = document.querySelector('#requestLocation');
+    const result = document.querySelector('#result');
+
+    function finish(message, state) {
+      result.innerHTML = message;
+      result.dataset.state = state;
+      button.disabled = false;
+      button.textContent = 'Request location again';
+    }
+
+    button.addEventListener('click', () => {
+      if (!navigator.geolocation) {
+        finish('This browser does not support geolocation.', 'error');
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = 'Waiting for your choice…';
+      result.textContent = 'Your browser should now show its permission prompt.';
+      result.dataset.state = '';
+
+      navigator.geolocation.getCurrentPosition(
+        ({ coords, timestamp }) => {
+          const latitude = coords.latitude.toFixed(5);
+          const longitude = coords.longitude.toFixed(5);
+          const accuracy = Math.round(coords.accuracy);
+          finish(
+            `Location shared with this page:<br><span class="coordinates">${latitude}, ${longitude}</span><br>` +
+            `Approximate accuracy: ±${accuracy} m<br>Read at ${new Date(timestamp).toLocaleString()}.`,
+            'success'
+          );
+        },
+        (error) => {
+          const messages = {
+            1: 'Location access was not granted. Nothing was collected.',
+            2: 'Your device could not determine its location.',
+            3: 'The location request timed out.'
+          };
+          finish(messages[error.code] || 'The location request could not be completed.', 'error');
+        },
+        { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }
+      );
+    });
+  </script>
+</body>
+</html>
