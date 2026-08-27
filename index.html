@@ -96,7 +96,6 @@
     #submitLocation { display: none; background: #166675; box-shadow: 0 5px 0 #0b3d5a; }
     #submitLocation.visible { display: block; }
     #submitLocation:hover { background: #0b3d5a; }
-    footer { margin-top: 22px; color: #6f7b8f; font-size: .78rem; text-align: center; }
     @media (max-width: 380px) {
       body { padding: 12px; }
       main { padding: 24px 18px; }
@@ -111,7 +110,7 @@
     <p class="intro">Location is sent only with your consent.</p>
 
     <button id="requestLocation" type="button">Share my location for this test</button>
-    <div id="result" role="status" aria-live="polite">No location has been requested.</div>
+    <div id="result" role="status" aria-live="polite" hidden></div>
 
     <div class="consent" id="consentPanel">
       <label>
@@ -121,7 +120,6 @@
     </div>
     <button id="submitLocation" type="button" disabled>Send coordinates to operator</button>
 
-    <footer>Educational demo · Revoke access at any time in your browser settings</footer>
   </main>
 
   <script>
@@ -133,6 +131,7 @@
     let capturedLocation = null;
 
     function finish(message, state) {
+      result.hidden = false;
       result.innerHTML = message;
       result.dataset.state = state;
       button.disabled = false;
@@ -147,6 +146,7 @@
 
       button.disabled = true;
       button.textContent = 'Waiting for your choice…';
+      result.hidden = false;
       result.textContent = 'Your browser should now show its permission prompt.';
       result.dataset.state = '';
 
