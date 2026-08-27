@@ -1,9 +1,8 @@
-FROM php:8.3-apache
+FROM php:8.2-apache
 
-COPY index.html capture.php /var/www/html/
-RUN php -l /var/www/html/capture.php
-RUN mkdir -p /var/lib/location-demo \
-    && chown www-data:www-data /var/lib/location-demo \
-    && chmod 700 /var/lib/location-demo
+RUN a2enmod rewrite
 
-EXPOSE 80
+COPY . /var/www/html/
+
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html

