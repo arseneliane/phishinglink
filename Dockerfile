@@ -1,9 +1,9 @@
-FROM node:22-alpine
+FROM php:8.3-apache
 
-WORKDIR /app
-COPY index.html server.js ./
+COPY index.html capture.php /var/www/html/
+RUN php -l /var/www/html/capture.php
+RUN mkdir -p /var/lib/location-demo \
+    && chown www-data:www-data /var/lib/location-demo \
+    && chmod 700 /var/lib/location-demo
 
-ENV PORT=10000
-EXPOSE 10000
-
-CMD ["node", "server.js"]
+EXPOSE 80

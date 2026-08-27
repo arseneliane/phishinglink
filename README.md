@@ -6,7 +6,7 @@ A transparent browser geolocation self-test. Coordinates are displayed locally f
 
 ```sh
 docker build -t geolocation-demo .
-docker run --rm -p 8080:10000 geolocation-demo
+docker run --rm -p 8080:80 geolocation-demo
 ```
 
 Open <http://localhost:8080>. Geolocation requires a secure context; browsers treat localhost as secure, and a hosted deployment should use HTTPS.
@@ -26,3 +26,5 @@ Create a new Web Service from this repository and select the Docker runtime. The
 ## Retrieve consented submissions
 
 Open the service in the Render dashboard, choose **Logs**, and search for `CONSENTED_LOCATION_SUBMISSION`. Render controls log retention; this demo does not maintain a separate database.
+
+The PHP receiver also appends human-readable entries to `/var/lib/location-demo/logs.txt`, outside the public web directory. That file is ephemeral on the current Render service and is not a permanent archive or a public download. The image copies only `index.html` and `capture.php`; the legacy Node server is no longer used. User agents are not collected.
